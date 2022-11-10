@@ -1,26 +1,32 @@
-﻿#include "ui_server.h"
+﻿#include <boost/asio.hpp>
 
-using namespace std;
+#include "helpers/logger.h"
+#include "helpers/stats.h"
+#include "tcp/tcp_server.h"
+
 using boost::asio::ip::tcp;
 
 int main()
 {
 	// Init logging
-	init_logger();
-	LOG_INFO("Server init.")
+	init_logger(false); // call init_logger(false); to redirect log to stdout
+	LOG_INFO("Server initialization.")
 
     // Initialize starting data of the cpu usage
     init_cpu_stat();
 
-	boost::asio::io_context io_context;
-	tcp::acceptor acceptor(io_context, tcp::endpoint(tcp::v4(), 5001));
-	for (;;)
+	int port = 5001;
+
+	LOG_INFO("Server starting at port " + std::to_string(port))
+	try
 	{
-		std::string message = "test";
-		tcp::socket socket(io_context);
-		acceptor.accept(socket);
-		boost::system::error_code error;
-		boost::asio::write(socket, boost::asio::buffer(message), error);
+		boost::asio::io_context io_context;
+		tcp_server server(io_context, port);
+		io_context.run();
+	}
+	catch (std::exception& e)
+	{
+		LOG_ERROR(e.what())
 	}
 
 	return 0;

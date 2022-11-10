@@ -8,7 +8,7 @@ find_package(Boost 1.62.0 COMPONENTS log)
 if(Boost_FOUND)
   message("Include headers: " ${Boost_INCLUDE_DIRS})
   include_directories(${Boost_INCLUDE_DIRS})
-  add_executable (ui_server "ui_server.cpp" "ui_server.h" "helpers/stats.h" "helpers/stats.cpp" "helpers/logger.h")
+  add_executable (ui_server "ui_server.cpp"  "helpers/stats.h" "helpers/stats.cpp" "helpers/logger.h" "tcp/tcp_server.h" "tcp/tcp_server.cpp" "tcp/tcp_connection.h"  "tcp/tcp_connection.cpp")
 
   if (CMAKE_VERSION VERSION_GREATER 3.12)
     set_property(TARGET ui_server PROPERTY CXX_STANDARD 20)
