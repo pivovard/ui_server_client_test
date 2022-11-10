@@ -1,9 +1,26 @@
 #pragma once
 
+#include <boost/log/core.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/log/utility/setup/file.hpp>
+
 #include <ctime>
 #include <string.h>
 
+/// Initialize logger
+/// - set file
+/// - set auto_flush true
+/// - set severity 
+inline void init_logger() {
+	auto sink = boost::log::add_file_log("info.log");
+	sink->locked_backend()->auto_flush(true); // write to the log file on every log
+	boost::log::core::get()->set_filter
+	(
+		boost::log::trivial::severity >= boost::log::trivial::info
+	);
+}
+
+/// Return current time as char*
 inline char* get_time() {
 	time_t sys_time = time(0); //get system time
 	char* time = std::ctime(&sys_time); //time to string
