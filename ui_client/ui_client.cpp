@@ -70,13 +70,34 @@ void commands(tcp::socket& socket)
 * Initialize connection with the server.
 * If succesfull execute commands in loop.
 */
-int main()
+int main(int argc, char* argv[])
 {
+    // default address and port
+    char* addr = "127.0.0.1";
+    int port = 5001;
+
+    // get address and port from command line arguments
+    if (argc == 3)
+    {
+        addr = argv[1];
+        try
+        {
+            port = std::stoi(argv[2]);
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "Unable to resolve port number." << std::endl;
+            return 1;
+        }
+    }
+
     // Init socket
     boost::asio::io_context io_context;
-    tcp::endpoint endpoint(boost::asio::ip::address::from_string("0.0.0.0"), 5001);
+    tcp::endpoint endpoint(boost::asio::ip::address::from_string(addr), port);
     tcp::socket socket(io_context);
 
+    // Connect to the server
+    std::cout << "Connecting..." << std::endl;
     try
     {
         socket.connect(endpoint);
@@ -89,8 +110,10 @@ int main()
     catch (std::exception& e)
     {
         std::cout << e.what() << std::endl;
+        return 1;
     }
 
+    // Close
     std::cout << "Closing socket." << std::endl;
     try
     {
