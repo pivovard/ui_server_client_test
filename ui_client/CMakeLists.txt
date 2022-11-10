@@ -7,7 +7,7 @@ cmake_minimum_required (VERSION 3.8)
 find_package(Boost 1.62.0 COMPONENTS log)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
-  add_executable (ui_client "ui_client.cpp" "ui_client.h")
+  add_executable (ui_client "ui_client.cpp")
 
   if (CMAKE_VERSION VERSION_GREATER 3.12)
     set_property(TARGET ui_server PROPERTY CXX_STANDARD 20)

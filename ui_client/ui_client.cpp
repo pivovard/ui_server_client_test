@@ -1,7 +1,9 @@
-#include "ui_client.h"
+#include <iostream>
+
+#include <boost/array.hpp>
+#include <boost/asio.hpp>
 
 using boost::asio::ip::tcp;
-using namespace std;
 
 /**
 * Send command to the server and receive a response.
@@ -9,27 +11,31 @@ using namespace std;
 * @param socket
 * @param command
 */
-void send_command(tcp::socket& socket, string &c)
+void send_command(tcp::socket& socket, std::string &c)
 {
-    // send command to the server
-    boost::array<char, 4> buff_in;
-    c += "\n"; //command should end by \n
-    std::copy(c.begin(), c.end(), buff_in.begin());
     boost::system::error_code error;
-    socket.write_some(boost::asio::buffer(buff_in, c.size()), error);
+
+    // send command to the server
+    c += "\n"; //command should end by \n
+    socket.write_some(boost::asio::buffer(c, c.size()), error);
     
     if (error) {
         throw boost::system::system_error(error);
     }
     
     // receive response
-    size_t len = socket.read_some(boost::asio::buffer(buff_in), error);
+    boost::asio::streambuf buff_in;
+    size_t len = boost::asio::read_until(socket, buff_in, '\n', error);
     
     if (error) {
         throw boost::system::system_error(error);
     }
+
+    std::istream stream(&buff_in);
+    std::string res;
+    getline(stream, res);
     
-    std::cout.write(buff_in.data(), len);
+    std::cout << res << std::endl;;
 }
 
 /**
@@ -41,24 +47,20 @@ void send_command(tcp::socket& socket, string &c)
 */
 void commands(tcp::socket& socket)
 {
-    cout << "Enter command cpu/mem/exit." << endl;
+    std::cout << "Enter command cpu/mem/exit." << std::endl;
     while (true) 
     {
         // Get next command
-        cout << "Command: ";
-        string input;
-        cin >> input;
+        std::cout << "Command: ";
+        std::string input;
+        std::cin >> input;
 
-        // send command to the server
-        if (!input.compare("cpu") || !input.compare("mem")) {
+        if (input.compare("exit")) {
             send_command(socket, input);
         }
         // end loop on exit
-        else if (!input.compare("exit")) {
-            break;
-        }
         else {
-            cout << "Invalid command." << endl;
+            break;
         }
     }
 }
@@ -80,16 +82,24 @@ int main()
         socket.connect(endpoint);
 
         if (socket.is_open()) {
-            cout << "Connected." << endl;
+            std::cout << "Connected." << std::endl;
             commands(socket); // execute commands in loop
         }
     }
     catch (std::exception& e)
     {
-        cout << e.what() << endl;
+        std::cout << e.what() << std::endl;
     }
 
-    cout << "Closing socket." << endl;
+    std::cout << "Closing socket." << std::endl;
+    try
+    {
+        socket.shutdown(socket.shutdown_both);
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+    }
     socket.close();
 
 	return 0;
