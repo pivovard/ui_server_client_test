@@ -1,4 +1,7 @@
-﻿#include <boost/asio.hpp>
+﻿#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+#include <boost/asio.hpp>
 
 #include "helpers/logger.h"
 #include "helpers/stats.h"
@@ -6,11 +9,38 @@
 
 using boost::asio::ip::tcp;
 
+/* Fork and create damon */
+void daemon() 
+{
+	pid_t pid = fork();
+
+	// Child
+	if (pid == 0) {
+		// ignore SIGHUP signal so when parent process exits child is not terminated
+		signal(SIGHUP, SIG_IGN);
+	}
+
+	// Terminate parent process
+	if (pid > 0) {
+		exit(EXIT_SUCCESS);
+	}
+
+	// Error
+	if (pid < 0) {
+		exit(EXIT_FAILURE);
+	}
+
+	LOG_INFO("Daemon created.")
+}
+
 int main(int argc, char* argv[])
 {
 	// Init logging
 	init_logger(); // call init_logger(false); to redirect log to stdout
 	LOG_INFO("Server initialization.")
+
+	// Create daemon
+	daemon();
 
     // Initialize starting data of the cpu usage
     init_cpu_stat();
@@ -27,7 +57,7 @@ int main(int argc, char* argv[])
 		catch (const std::exception& e)
 		{
 			LOG_FATAL("Unable to resolve port number.")
-			return 1;
+			return 2;
 		}
 	}
 
@@ -41,7 +71,7 @@ int main(int argc, char* argv[])
 	catch (std::exception& e)
 	{
 		LOG_FATAL(e.what())
-	    return 1;
+	    return 2;
 	}
 
 	return 0;
