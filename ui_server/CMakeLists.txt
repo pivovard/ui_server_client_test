@@ -1,7 +1,7 @@
 ﻿# CMakeList.txt : CMake project for ui_server, include source and define
 # project specific logic here.
 #
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.7)
 
 # Add source to this project's executable.
 find_package(Boost 1.62.0 COMPONENTS log)
