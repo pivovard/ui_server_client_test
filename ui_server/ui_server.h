@@ -1,25 +1,12 @@
 ﻿#pragma once
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <vector>
-#include <map>
+#include <boost/log/core.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/utility/setup/file.hpp>
+#include "helpers/logger.h"
 
-int idle_prev = 0;
-int nidle_prev = 0;
+#define BOOST_LOG_DYN_LINK 1
 
-struct CpuStat
-{
-	int user;
-	int nice;
-	int system;
-	int idle;
-	int iowait;
-	int irq;
-	int softirg;
-	int steal;
-	int guest;
-	int guest_nice;
-};
+#include <boost/asio.hpp>
+
+#include "helpers/stats.h"

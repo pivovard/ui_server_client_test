@@ -7,3 +7,4 @@ project ("ui_server_client_test")
 
 # Include sub-projects.
 add_subdirectory ("ui_server")
+add_subdirectory ("ui_client")
