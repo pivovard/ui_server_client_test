@@ -91,13 +91,13 @@ int main(int argc, char* argv[])
         }
     }
 
-    // Init socket
+    // Init and connect socket
+    std::cout << "Connecting to " << addr << ":" << port << std::endl;
+
     boost::asio::io_context io_context;
     tcp::endpoint endpoint(boost::asio::ip::address::from_string(addr), port);
     tcp::socket socket(io_context);
 
-    // Connect to the server
-    std::cout << "Connecting..." << std::endl;
     try
     {
         socket.connect(endpoint);
