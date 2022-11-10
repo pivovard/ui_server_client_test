@@ -73,7 +73,7 @@ void commands(tcp::socket& socket)
 int main(int argc, char* argv[])
 {
     // default address and port
-    char* addr = "127.0.0.1";
+    std::string addr = "127.0.0.1";
     int port = 5001;
 
     // get address and port from command line arguments
